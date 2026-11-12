@@ -37,7 +37,8 @@ Compose 프로젝트명은 `rag-quality-lab`입니다. 이 프로젝트의 컨�
    바인딩은 기본값(`127.0.0.1:11434`)을 유지합니다. `OLLAMA_HOST=0.0.0.0`은 설정하지 마세요(LAN 노출).
 3. **Gemini 키**(선택): 결제가 연결되지 않은 Google 프로젝트의 키를 `.env`의 `GEMINI_API_KEY`에 넣고 `RQL_CHAT_PROVIDER=google-genai`로 바꿉니다. 키가 없으면 `none`으로 두세요. Spring AI는 키가 비어 있으면 기동에 실패합니다.
 4. **JDK**: 별도 설치가 필요 없습니다. Gradle toolchain이 Apple Silicon용 Temurin 21을 `~/.gradle/jdks`에 자동으로 받습니다. Gradle 실행용 JVM(Java 17 이상)만 있으면 됩니다.
-5. **Node 24 LTS**: `frontend/.nvmrc` 기준. Node 23 등 지원 종료 버전은 의존성(Vitest, jsdom)이 지원하지 않아 `npm install`이 실패하도록 막아 두었습니다.
+5. **IDE**: 저장소 루트를 그대로 열면 됩니다. 루트 `settings.gradle.kts`가 `backend`를 포함(composite build)하므로 IntelliJ가 Gradle 프로젝트로 자동 인식합니다. 이미 열어 둔 상태라면 Gradle 창에서 새로고침(Reload)하세요.
+6. **Node 24 LTS**: `frontend/.nvmrc` 기준. Node 23 등 지원 종료 버전은 의존성(Vitest, jsdom)이 지원하지 않아 `npm install`이 실패하도록 막아 두었습니다.
 
 ## 실행
 
