@@ -1,0 +1,58 @@
+# 기본값과 의미는 README.md "설정" 절에 정리한다. 비밀값은 환경변수 또는 루트 .env(커밋 금지)로만 넣는다.
+spring:
+  application:
+    name: rag-quality-lab
+  config:
+    # 로컬 개발 시 저장소 루트의 .env를 읽는다 (Compose와 같은 파일 사용)
+    import: "optional:file:../.env[.properties],optional:file:./.env[.properties]"
+  datasource:
+    url: jdbc:postgresql://${RQL_DB_HOST:localhost}:${RQL_DB_PORT:15432}/${RQL_DB_NAME:rql}
+    username: ${RQL_DB_USER:rql}
+    password: ${RQL_DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+  ai:
+    model:
+      # ADR-0004/0003: 채팅은 Gemini, 임베딩은 Ollama. 다른 공급자의 같은 역할 자동설정은 끈다
+      # Spring AI는 Gemini 키가 비어 있으면 기동에 실패한다. 키가 없을 때는 RQL_CHAT_PROVIDER=none으로 채팅 기능만 끈다
+      chat: ${RQL_CHAT_PROVIDER:google-genai}
+      embedding: ollama
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY:}
+        chat:
+          model: ${RQL_GENERATION_MODEL:gemini-3.5-flash-lite}
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      init:
+        # 자동 다운로드 금지. 모델은 README 절차로 수동 pull
+        pull-model-strategy: never
+      embedding:
+        model: ${RQL_EMBEDDING_MODEL:qwen3-embedding:0.6b}
+
+server:
+  port: ${RQL_API_PORT:18080}
+  error:
+    include-stacktrace: never
+    include-message: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      show-components: always
+  health:
+    defaults:
+      enabled: true
+
+app:
+  ollama:
+    health-timeout: 2s
