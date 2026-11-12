@@ -41,13 +41,20 @@
 | Boot 4.1.x ↔ Gradle 9.x | ✅ | 전역 8.12.1은 ❌ → Wrapper |
 | Spring AI Google GenAI ↔ Gemini Developer API 키 | ✅ | `api-key` 설정 시 |
 | Spring AI Google GenAI ↔ 네이티브 구조화 출력 | ✅ | 기본 꺼짐, 호출 단위 활성화 |
-| Spring AI Ollama ↔ `qwen3-embedding:0.6b` | ⚠ 문서상 "Ollama 지원 모델 사용 가능", 특정 모델 언급 없음 | Phase 1 스파이크에서 실제 임베딩 1건 생성 검증 |
-| Google GenAI(채팅) + Ollama(임베딩) 동시 자동설정 | ⚠ 명시적 문서 없음 | `spring.ai.model.chat=google-genai`, `spring.ai.model.embedding=ollama`로 Phase 1 검증. 충돌 시 수동 Bean 구성 |
+| Spring AI Ollama ↔ `qwen3-embedding:0.6b` | ✅ (Phase 1 검증 2026-11-12) | Ollama 0.40.13에서 1024차원, L2 노름 1.0(정규화됨). 한국어 관련 문장이 무관 문장보다 가까움 (`OllamaEmbeddingSpikeTests`) |
+| Google GenAI(채팅) + Ollama(임베딩) 동시 자동설정 | ✅ (Phase 1 검증) | `spring.ai.model.chat=google-genai`, `spring.ai.model.embedding=ollama`로 ChatModel·EmbeddingModel이 각각 1개만 생성됨. **단, Gemini 키가 비어 있으면 기동 실패** → 키가 없을 때 `RQL_CHAT_PROVIDER=none` |
 | 1024차원 ↔ pgvector HNSW | ✅ | 한도 2000 |
-| Docker 앱 컨테이너 → 호스트 Ollama | ⚠ | `host.docker.internal:11434`. Ollama가 127.0.0.1에만 바인딩된 상태에서 Docker Desktop 경유 접근 가능 여부는 Phase 1에서 확인. 불가 시 대안은 ADR-0002 |
-| JDK x86_64(Rosetta) ↔ arm64 Docker/Testcontainers | ⚠ | 동작은 가능하나 느림. arm64 JDK 권장 |
+| Docker 앱 컨테이너 → 호스트 Ollama | ✅ (Phase 1 검증) | Ollama를 127.0.0.1에만 바인딩한 상태에서 API 컨테이너가 `host.docker.internal:11434`로 접근 가능(Docker Desktop 29.4.3). `OLLAMA_HOST` 변경 불필요 |
+| JDK x86_64(Rosetta) ↔ arm64 Docker/Testcontainers | ✅ 해소 | Gradle toolchain(vendor ADOPTIUM)과 daemon JVM 지정으로 Temurin 21.0.13 arm64 자동 사용 |
 
-## 4. 버전 고정 정책
+## 4. Phase 1에서 확인한 추가 사항 (2026-11-12)
+| 항목 | 내용 | 대응 |
+|---|---|---|
+| Node 23 | Vitest 4, jsdom 29·30이 Node 23을 지원 범위에서 제외 | Node 24 LTS(24.22.2) 기준, `engine-strict`로 차단 |
+| npm 10.9.2 (Homebrew Node 23 동봉) | 의존성 해석 버그(`Cannot read properties of null (reading 'edgesOut')`)로 설치 실패 | Node 24 동봉 npm 11 사용 |
+| 고정 버전 | Gradle 9.8.2(배포본 SHA-256 고정), React 19.3.1, Vite 8.3.5, React Router 8.5.1, TypeScript 7.0.2, Vitest 4.1.12, nginx 1.30.6, Node 24.22.2 이미지 | 배포 후 2주 이상 지난 안정판 |
+
+## 5. 버전 고정 정책
 - Gradle: Spring Boot 플러그인 + Spring AI BOM으로 관리, 개별 버전 직접 지정 최소화.
 - Docker 이미지: `latest` 금지, 버전 태그 고정.
 - 프론트엔드: `package-lock.json` 커밋, 정확한 버전 고정.
