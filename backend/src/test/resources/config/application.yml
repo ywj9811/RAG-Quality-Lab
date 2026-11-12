@@ -1,9 +1,9 @@
 # 테스트 전용 덮어쓰기 (classpath:/config/는 main의 application.yml보다 우선한다)
 spring:
-  config:
-    # 테스트는 로컬 .env를 읽지 않는다
-    import: ""
   ai:
+    model:
+      chat: google-genai
+      embedding: ollama
     google:
       genai:
         # 자동설정 기동용 더미 값. 기본 test 태스크는 Gemini를 호출하지 않는다

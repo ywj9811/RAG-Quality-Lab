@@ -51,6 +51,11 @@ dependencyManagement {
     }
 }
 
+// 테스트는 개발자 로컬 .env(비밀값·개인 설정)를 읽지 않는다
+tasks.withType<Test>().configureEach {
+    environment("RQL_ENV_FILE", layout.buildDirectory.file("no-env-file").get().asFile.absolutePath)
+}
+
 // 기본 test: 외부 서비스 없이 실행 (Docker는 Testcontainers용으로 필요)
 tasks.test {
     useJUnitPlatform {

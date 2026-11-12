@@ -3,8 +3,8 @@ spring:
   application:
     name: rag-quality-lab
   config:
-    # 로컬 개발 시 저장소 루트의 .env를 읽는다 (Compose와 같은 파일 사용)
-    import: "optional:file:../.env[.properties],optional:file:./.env[.properties]"
+    # 로컬 개발 시 저장소 루트의 .env를 읽는다 (Compose와 같은 파일 사용). 테스트 태스크는 RQL_ENV_FILE로 끈다
+    import: "optional:file:${RQL_ENV_FILE:../.env}[.properties]"
   datasource:
     url: jdbc:postgresql://${RQL_DB_HOST:localhost}:${RQL_DB_PORT:15432}/${RQL_DB_NAME:rql}
     username: ${RQL_DB_USER:rql}
@@ -36,6 +36,8 @@ spring:
 
 server:
   port: ${RQL_API_PORT:18080}
+  # 호스트 실행 시 LAN에 노출하지 않는다 (ADR-0008). 컨테이너에서는 0.0.0.0
+  address: ${RQL_API_BIND:127.0.0.1}
   error:
     include-stacktrace: never
     include-message: never
