@@ -43,6 +43,7 @@ services:
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-}
       RQL_ADMIN_SESSION_TIMEOUT: ${RQL_ADMIN_SESSION_TIMEOUT:-30m}
       RQL_COOKIE_SECURE: ${RQL_COOKIE_SECURE:-false}
+      RQL_UPLOAD_DIR: /data/uploads
     ports:
       - "127.0.0.1:${RQL_API_PORT:-18080}:8080"
     volumes:

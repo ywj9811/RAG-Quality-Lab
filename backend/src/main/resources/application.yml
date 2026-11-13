@@ -15,6 +15,11 @@ spring:
       ddl-auto: validate
   flyway:
     locations: classpath:db/migration
+  servlet:
+    multipart:
+      # 업로드 상한(승인 #13). 실제 검증은 app.document.max-upload-size로 한 번 더 한다
+      max-file-size: ${app.document.max-upload-size}
+      max-request-size: 11MB
   autoconfigure:
     # 기본 사용자·임시 비밀번호 생성(로그 출력)을 막는다. 관리자 계정은 DB(admin_users)만 사용
     exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
@@ -71,6 +76,19 @@ management:
 app:
   ollama:
     health-timeout: 2s
+  document:
+    max-upload-size: 10MB
+    upload-dir: ${RQL_UPLOAD_DIR:../data/uploads}
+    chunk-size-chars: 800
+    chunk-overlap-chars: 120
+    processing-threads: 1
+  embedding:
+    dimensions: 1024
+    batch-size: 16
+    # Qwen3-Embedding 권장 형식(ADR-0003). 다국어 질의에도 instruction은 영어로 둔다
+    query-instruction: "Instruct: Given a Korean technical question about Java and Spring, retrieve relevant passages that answer it\nQuery:"
+  retrieval:
+    top-k: 5
   admin:
     max-failed-attempts: 5
     lock-duration: 15m
