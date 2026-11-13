@@ -40,6 +40,12 @@ Compose 프로젝트명은 `rag-quality-lab`입니다. 이 프로젝트의 컨�
 5. **IDE**: 저장소 루트를 그대로 열면 됩니다. 루트 `settings.gradle.kts`가 `backend`를 포함(composite build)하므로 IntelliJ가 Gradle 프로젝트로 자동 인식합니다. 이미 열어 둔 상태라면 Gradle 창에서 새로고침(Reload)하세요.
 6. **Node 24 LTS**: `frontend/.nvmrc` 기준. Node 23 등 지원 종료 버전은 의존성(Vitest, jsdom)이 지원하지 않아 `npm install`이 실패하도록 막아 두었습니다.
 
+## 관리자 계정
+
+- 관리자 계정이 하나도 없을 때, 기동 시 `.env`의 `ADMIN_INITIAL_USERNAME`·`ADMIN_INITIAL_PASSWORD`(12자 이상)로 초기 관리자 1명을 만듭니다. 계정이 생긴 뒤에는 이 값을 바꿔도 반영되지 않습니다.
+- 로그인 화면: `http://127.0.0.1:15173/admin/login`
+- 5회 연속 실패 시 15분간 잠깁니다(`app.admin.*` 설정). 세션은 30분 동안 활동이 없으면 만료됩니다.
+
 ## 실행
 
 ### 개발 모드 (DB만 컨테이너)
@@ -73,7 +79,7 @@ docker compose --profile app down -v       # 이 프로젝트 볼륨까지 삭�
 | 명령 | 내용 | 필요 조건 |
 |---|---|---|
 | `cd backend && ./gradlew test` | 단위 + 통합(Testcontainers pgvector) | Docker |
-| `cd backend && ./gradlew ollamaTest` | 실제 Ollama 임베딩(1024차원) 확인 | Ollama 실행 + 모델 pull |
+| `cd backend && ./gradlew ollamaTest` | 실제 Ollama 임베딩 확인 + 골든셋 검색 회귀(Recall@5·MRR, 결과 `backend/build/reports/retrieval-regression.json`) | Ollama 실행 + 모델 pull |
 | `cd backend && ./gradlew externalTest` | Gemini 실제 호출 (수동 전용, 무료 한도 소모) | `GEMINI_API_KEY` |
 | `cd frontend && npm test` | 프론트 단위 테스트 | Node 24 |
 | `cd frontend && npm run typecheck && npm run build` | 타입 검사, 빌드 | Node 24 |
@@ -90,6 +96,10 @@ CI(GitHub Actions)는 `test`와 프론트 검사만 실행하며 비밀값을 �
 | `RQL_CHAT_PROVIDER` | `google-genai` (`.env.example`·Compose는 `none`) | 채팅 모델 공급자. 키가 없으면 `none` |
 | `RQL_GENERATION_MODEL` | `gemini-3.5-flash-lite` | 생성 모델 ID (ADR-0004) |
 | `RQL_EMBEDDING_MODEL` | `qwen3-embedding:0.6b` | 임베딩 모델 (ADR-0003) |
+| `RQL_EMBEDDING_QUERY_INSTRUCTION` | (빈 값) | 질의 임베딩 앞에 붙이는 instruction. Phase 2 측정 결과 빈 값이 더 좋음 (ADR-0003) |
+| `RQL_UPLOAD_DIR` | `../data/uploads` (컨테이너: `/data/uploads`) | 업로드 원본 저장 위치 |
+| `app.document.*` | 10MB, 청크 800자/겹침 120자, 처리 스레드 1 | 업로드·청크 설정 |
+| `app.retrieval.top-k` | `5` | 기본 검색 개수 |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | 호스트 실행 시 Ollama 주소 |
 | `app.ollama.health-timeout` | `2s` | Ollama 헬스체크 대기 상한 |
 

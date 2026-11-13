@@ -6,6 +6,10 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
@@ -21,6 +25,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ProblemDetail handleValidation(MethodArgumentNotValidException e) {
         return ProblemDetails.of(ErrorCode.VALIDATION_FAILED, "입력 값을 확인해 주세요.");
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    ProblemDetail handleTooLarge(MaxUploadSizeExceededException e) {
+        return ProblemDetails.of(ErrorCode.FILE_TOO_LARGE, "업로드 가능한 크기를 넘었습니다.");
+    }
+
+    @ExceptionHandler({MissingServletRequestPartException.class, MissingServletRequestParameterException.class,
+        MethodArgumentTypeMismatchException.class})
+    ProblemDetail handleBadRequest(Exception e) {
+        return ProblemDetails.of(ErrorCode.VALIDATION_FAILED, "요청 형식을 확인해 주세요.");
     }
 
     @ExceptionHandler(NoResourceFoundException.class)

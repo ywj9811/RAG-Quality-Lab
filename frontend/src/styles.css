@@ -9,3 +9,24 @@ body { margin: 0; }
 .notice { border: 1px solid #d0a400; background: #fff8e1; border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
 .health { margin-top: 24px; font-size: 0.9rem; color: #57606a; }
 button { font: inherit; padding: 8px 16px; border-radius: 6px; }
+.narrow { max-width: 360px; }
+.form { display: flex; flex-direction: column; gap: 12px; }
+.form label { display: flex; flex-direction: column; gap: 4px; }
+.form input { font: inherit; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; }
+.error { color: #cf222e; }
+.muted { color: #57606a; }
+.admin-nav { display: flex; gap: 16px; align-items: center; padding: 12px 16px; border-bottom: 1px solid #d0d7de; flex-wrap: wrap; }
+.wide { max-width: 1040px; }
+.upload { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin: 16px 0; }
+.upload label { display: flex; flex-direction: column; gap: 4px; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid #d0d7de; vertical-align: top; }
+.actions { display: flex; gap: 8px; }
+.small { font-size: 0.85rem; }
+.status-ready { color: #1a7f37; }
+.status-failed { color: #cf222e; }
+.status-processing, .status-uploaded { color: #9a6700; }
+.dialog { position: fixed; inset: 0; margin: auto; height: fit-content; max-width: 420px; background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px 20px; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+.danger { color: #fff; background: #cf222e; border: 1px solid #cf222e; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

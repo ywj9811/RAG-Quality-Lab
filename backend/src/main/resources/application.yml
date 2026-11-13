@@ -15,6 +15,14 @@ spring:
       ddl-auto: validate
   flyway:
     locations: classpath:db/migration
+  servlet:
+    multipart:
+      # 업로드 상한(승인 #13). 실제 검증은 app.document.max-upload-size로 한 번 더 한다
+      max-file-size: ${app.document.max-upload-size}
+      max-request-size: 11MB
+  autoconfigure:
+    # 기본 사용자·임시 비밀번호 생성(로그 출력)을 막는다. 관리자 계정은 DB(admin_users)만 사용
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
   ai:
     model:
       # ADR-0004/0003: 채팅은 Gemini, 임베딩은 Ollama. 다른 공급자의 같은 역할 자동설정은 끈다
@@ -38,6 +46,16 @@ server:
   port: ${RQL_API_PORT:18080}
   # 호스트 실행 시 LAN에 노출하지 않는다 (ADR-0008). 컨테이너에서는 0.0.0.0
   address: ${RQL_API_BIND:127.0.0.1}
+  servlet:
+    session:
+      # 관리자 세션 (docs/phase0/05_api_contract.md 0절)
+      timeout: ${RQL_ADMIN_SESSION_TIMEOUT:30m}
+      cookie:
+        name: rql_admin
+        http-only: true
+        same-site: strict
+        # 로컬 HTTP 개발에서는 false. HTTPS 배포 시 true
+        secure: ${RQL_COOKIE_SECURE:false}
   error:
     include-stacktrace: never
     include-message: never
@@ -58,3 +76,21 @@ management:
 app:
   ollama:
     health-timeout: 2s
+  document:
+    max-upload-size: 10MB
+    upload-dir: ${RQL_UPLOAD_DIR:../data/uploads}
+    chunk-size-chars: 800
+    chunk-overlap-chars: 120
+    processing-threads: 1
+  embedding:
+    dimensions: 1024
+    batch-size: 16
+    # 질의 앞에 붙이는 instruction. 기본은 빈 값(ADR-0003 Phase 2 측정: 접두어 없음이 MRR 0.833 > 0.717).
+    # Qwen3 권장 형식을 쓰려면 예: "Instruct: Given a Korean technical question about Java and Spring, retrieve relevant passages that answer it\nQuery:"
+    query-instruction: ${RQL_EMBEDDING_QUERY_INSTRUCTION:}
+  retrieval:
+    top-k: 5
+  admin:
+    max-failed-attempts: 5
+    lock-duration: 15m
+    min-password-length: 12
