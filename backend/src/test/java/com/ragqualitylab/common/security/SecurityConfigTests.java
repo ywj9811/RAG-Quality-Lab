@@ -43,9 +43,17 @@ class SecurityConfigTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void stateChangingAdminRequestWithoutCsrfIsForbidden() throws Exception {
         mvc.perform(post("/api/admin/anything"))
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.code").value("CSRF_INVALID"));
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void nonAdminRoleIsForbidden() throws Exception {
+        mvc.perform(get("/api/admin/anything"))
             .andExpect(status().isForbidden())
             .andExpect(jsonPath("$.code").value("FORBIDDEN"));
     }

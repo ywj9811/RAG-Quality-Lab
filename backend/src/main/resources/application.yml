@@ -15,6 +15,9 @@ spring:
       ddl-auto: validate
   flyway:
     locations: classpath:db/migration
+  autoconfigure:
+    # 기본 사용자·임시 비밀번호 생성(로그 출력)을 막는다. 관리자 계정은 DB(admin_users)만 사용
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
   ai:
     model:
       # ADR-0004/0003: 채팅은 Gemini, 임베딩은 Ollama. 다른 공급자의 같은 역할 자동설정은 끈다
@@ -38,6 +41,16 @@ server:
   port: ${RQL_API_PORT:18080}
   # 호스트 실행 시 LAN에 노출하지 않는다 (ADR-0008). 컨테이너에서는 0.0.0.0
   address: ${RQL_API_BIND:127.0.0.1}
+  servlet:
+    session:
+      # 관리자 세션 (docs/phase0/05_api_contract.md 0절)
+      timeout: ${RQL_ADMIN_SESSION_TIMEOUT:30m}
+      cookie:
+        name: rql_admin
+        http-only: true
+        same-site: strict
+        # 로컬 HTTP 개발에서는 false. HTTPS 배포 시 true
+        secure: ${RQL_COOKIE_SECURE:false}
   error:
     include-stacktrace: never
     include-message: never
@@ -58,3 +71,7 @@ management:
 app:
   ollama:
     health-timeout: 2s
+  admin:
+    max-failed-attempts: 5
+    lock-duration: 15m
+    min-password-length: 12
