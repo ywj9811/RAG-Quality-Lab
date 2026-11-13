@@ -1,0 +1,17 @@
+# 비밀값
+.env
+.env.*
+!.env.example
+
+# OS·에디터
+.DS_Store
+.idea/
+.vscode/
+
+# 업로드·로컬 데이터
+uploads/
+data/
+
+# Gradle (루트 composite build)
+/.gradle/
+/build/

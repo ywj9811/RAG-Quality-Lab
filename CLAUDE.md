@@ -125,7 +125,11 @@
 - 끝으로 **승인 요청 체크리스트**를 제출하고 멈춘다. 기능 코드 구현, 실제 외부 API 호출, 컨테이너 생성 및 유료 리소스 생성 금지.
 
 ## 9. 빌드·테스트·실행 명령
-- (Phase 1에서 채운다. 백엔드/프론트엔드 빌드, 테스트, Compose 기동·종료, 포트 목록을 이 절에 기록한다.)
+- 명령·포트·설정의 단일 기준은 `README.md`(실행, 테스트, 설정 절)다. 여기에는 에이전트용 요점만 둔다.
+- 백엔드: `cd backend && ./gradlew test` (Docker 필요). Ollama 필요 테스트는 `ollamaTest`, Gemini 실제 호출은 `externalTest`(수동, 무료 한도 소모 — 오너 지시나 1.1절 범위에서만).
+- 프론트: Node 24 LTS 필요(`frontend/.nvmrc`). `npm run typecheck && npm test && npm run build`.
+- Compose: `docker compose up -d`(db만), `docker compose --profile app up -d --build`(전체), 종료는 `docker compose --profile app down`. 항상 프로젝트명 `rag-quality-lab` 범위 안에서만 다룬다.
+- 포트: DB 15432, API 18080, 웹 15173, Ollama 11434(네이티브). 모두 127.0.0.1 바인딩.
 
 ## 10. 완료 정의
 - 요구사항 ID에 추적 가능해야 한다.

@@ -12,7 +12,7 @@
 - 공식 dmg로 `/Applications`에 설치(오너 승인 후, 오너 또는 Claude Code가 수행).
 - 바인딩은 **기본값 `127.0.0.1:11434` 유지**(LAN 노출 방지). `OLLAMA_HOST=0.0.0.0` 설정하지 않음.
 - 개발 모드: 호스트에서 실행하는 API가 `http://localhost:11434` 사용.
-- 데모 모드(앱 컨테이너): `http://host.docker.internal:11434`. Phase 1에서 127.0.0.1 바인딩 상태로 접근 가능한지 검증.
+- 데모 모드(앱 컨테이너): `http://host.docker.internal:11434`. **Phase 1 검증(2026-11-12): 127.0.0.1 바인딩 상태로 접근 가능**(Docker Desktop 29.4.3, Ollama 0.40.13).
 - 모델 자동 pull 끔(`spring.ai.ollama.init.pull-model-strategy=never`), 수동 `ollama pull qwen3-embedding:0.6b`.
 
 ## 대안

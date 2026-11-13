@@ -1,0 +1,63 @@
+# ADR-0008: 프로젝트명·포트·볼륨을 분리해 오너의 다른 Docker 리소스와 섞이지 않게 한다.
+# 개발 모드: `docker compose up -d`                       → db만 실행 (API·프론트는 호스트에서 실행)
+# 데모 모드: `docker compose --profile app up -d --build` → db + api + web
+name: rag-quality-lab
+
+services:
+  db:
+    image: pgvector/pgvector:0.8.7-pg17-bookworm
+    environment:
+      POSTGRES_DB: ${RQL_DB_NAME:-rql}
+      POSTGRES_USER: ${RQL_DB_USER:-rql}
+      POSTGRES_PASSWORD: ${RQL_DB_PASSWORD:?RQL_DB_PASSWORD를 .env에 설정하세요}
+    ports:
+      - "127.0.0.1:${RQL_DB_PORT:-15432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    profiles: ["app"]
+    build:
+      context: ./backend
+    environment:
+      RQL_API_PORT: "8080"
+      RQL_API_BIND: "0.0.0.0"
+      RQL_DB_HOST: db
+      RQL_DB_PORT: "5432"
+      RQL_DB_NAME: ${RQL_DB_NAME:-rql}
+      RQL_DB_USER: ${RQL_DB_USER:-rql}
+      RQL_DB_PASSWORD: ${RQL_DB_PASSWORD:?RQL_DB_PASSWORD를 .env에 설정하세요}
+      # ADR-0002: 호스트 네이티브 Ollama
+      OLLAMA_BASE_URL: ${RQL_OLLAMA_URL_FROM_CONTAINER:-http://host.docker.internal:11434}
+      RQL_EMBEDDING_MODEL: ${RQL_EMBEDDING_MODEL:-qwen3-embedding:0.6b}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      RQL_CHAT_PROVIDER: ${RQL_CHAT_PROVIDER:-none}
+      RQL_GENERATION_MODEL: ${RQL_GENERATION_MODEL:-gemini-3.5-flash-lite}
+    ports:
+      - "127.0.0.1:${RQL_API_PORT:-18080}:8080"
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    profiles: ["app"]
+    build:
+      context: ./frontend
+    ports:
+      - "127.0.0.1:${RQL_WEB_PORT:-15173}:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:
