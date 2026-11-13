@@ -85,8 +85,9 @@ app:
   embedding:
     dimensions: 1024
     batch-size: 16
-    # Qwen3-Embedding 권장 형식(ADR-0003). 다국어 질의에도 instruction은 영어로 둔다
-    query-instruction: "Instruct: Given a Korean technical question about Java and Spring, retrieve relevant passages that answer it\nQuery:"
+    # 질의 앞에 붙이는 instruction. 기본은 빈 값(ADR-0003 Phase 2 측정: 접두어 없음이 MRR 0.833 > 0.717).
+    # Qwen3 권장 형식을 쓰려면 예: "Instruct: Given a Korean technical question about Java and Spring, retrieve relevant passages that answer it\nQuery:"
+    query-instruction: ${RQL_EMBEDDING_QUERY_INSTRUCTION:}
   retrieval:
     top-k: 5
   admin:

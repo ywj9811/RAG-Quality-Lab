@@ -79,7 +79,7 @@ docker compose --profile app down -v       # 이 프로젝트 볼륨까지 삭�
 | 명령 | 내용 | 필요 조건 |
 |---|---|---|
 | `cd backend && ./gradlew test` | 단위 + 통합(Testcontainers pgvector) | Docker |
-| `cd backend && ./gradlew ollamaTest` | 실제 Ollama 임베딩(1024차원) 확인 | Ollama 실행 + 모델 pull |
+| `cd backend && ./gradlew ollamaTest` | 실제 Ollama 임베딩 확인 + 골든셋 검색 회귀(Recall@5·MRR, 결과 `backend/build/reports/retrieval-regression.json`) | Ollama 실행 + 모델 pull |
 | `cd backend && ./gradlew externalTest` | Gemini 실제 호출 (수동 전용, 무료 한도 소모) | `GEMINI_API_KEY` |
 | `cd frontend && npm test` | 프론트 단위 테스트 | Node 24 |
 | `cd frontend && npm run typecheck && npm run build` | 타입 검사, 빌드 | Node 24 |
@@ -96,6 +96,10 @@ CI(GitHub Actions)는 `test`와 프론트 검사만 실행하며 비밀값을 �
 | `RQL_CHAT_PROVIDER` | `google-genai` (`.env.example`·Compose는 `none`) | 채팅 모델 공급자. 키가 없으면 `none` |
 | `RQL_GENERATION_MODEL` | `gemini-3.5-flash-lite` | 생성 모델 ID (ADR-0004) |
 | `RQL_EMBEDDING_MODEL` | `qwen3-embedding:0.6b` | 임베딩 모델 (ADR-0003) |
+| `RQL_EMBEDDING_QUERY_INSTRUCTION` | (빈 값) | 질의 임베딩 앞에 붙이는 instruction. Phase 2 측정 결과 빈 값이 더 좋음 (ADR-0003) |
+| `RQL_UPLOAD_DIR` | `../data/uploads` (컨테이너: `/data/uploads`) | 업로드 원본 저장 위치 |
+| `app.document.*` | 10MB, 청크 800자/겹침 120자, 처리 스레드 1 | 업로드·청크 설정 |
+| `app.retrieval.top-k` | `5` | 기본 검색 개수 |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | 호스트 실행 시 Ollama 주소 |
 | `app.ollama.health-timeout` | `2s` | Ollama 헬스체크 대기 상한 |
 
