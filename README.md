@@ -40,6 +40,12 @@ Compose 프로젝트명은 `rag-quality-lab`입니다. 이 프로젝트의 컨�
 5. **IDE**: 저장소 루트를 그대로 열면 됩니다. 루트 `settings.gradle.kts`가 `backend`를 포함(composite build)하므로 IntelliJ가 Gradle 프로젝트로 자동 인식합니다. 이미 열어 둔 상태라면 Gradle 창에서 새로고침(Reload)하세요.
 6. **Node 24 LTS**: `frontend/.nvmrc` 기준. Node 23 등 지원 종료 버전은 의존성(Vitest, jsdom)이 지원하지 않아 `npm install`이 실패하도록 막아 두었습니다.
 
+## 관리자 계정
+
+- 관리자 계정이 하나도 없을 때, 기동 시 `.env`의 `ADMIN_INITIAL_USERNAME`·`ADMIN_INITIAL_PASSWORD`(12자 이상)로 초기 관리자 1명을 만듭니다. 계정이 생긴 뒤에는 이 값을 바꿔도 반영되지 않습니다.
+- 로그인 화면: `http://127.0.0.1:15173/admin/login`
+- 5회 연속 실패 시 15분간 잠깁니다(`app.admin.*` 설정). 세션은 30분 동안 활동이 없으면 만료됩니다.
+
 ## 실행
 
 ### 개발 모드 (DB만 컨테이너)
