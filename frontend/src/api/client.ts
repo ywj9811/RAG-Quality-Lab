@@ -35,23 +35,27 @@ async function toApiError(res: Response): Promise<ApiError> {
   }
 }
 
-export async function apiRequest<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const headers: Record<string, string> = { Accept: "application/json" };
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+async function send<T>(method: string, path: string, body: BodyInit | undefined, headers: Record<string, string>) {
+  headers.Accept = "application/json";
   if (method !== "GET") headers["X-XSRF-TOKEN"] = await ensureXsrfToken();
-
   let res: Response;
   try {
-    res = await fetch(path, {
-      method,
-      headers,
-      credentials: "same-origin",
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
+    res = await fetch(path, { method, headers, credentials: "same-origin", body });
   } catch {
     throw new ApiError(0, "NETWORK_ERROR", "서버에 연결할 수 없습니다.");
   }
   if (!res.ok) throw await toApiError(res);
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
+}
+
+export function apiRequest<T>(method: string, path: string, body?: unknown): Promise<T> {
+  return body === undefined
+    ? send<T>(method, path, undefined, {})
+    : send<T>(method, path, JSON.stringify(body), { "Content-Type": "application/json" });
+}
+
+/** multipart 업로드. Content-Type은 브라우저가 boundary와 함께 정한다. */
+export function apiUpload<T>(path: string, form: FormData): Promise<T> {
+  return send<T>("POST", path, form, {});
 }

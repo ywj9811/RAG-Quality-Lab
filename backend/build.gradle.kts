@@ -32,6 +32,8 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.springframework.ai:spring-ai-starter-model-google-genai")
     implementation("org.springframework.ai:spring-ai-starter-model-ollama")
+    // PDF 텍스트 추출 (Spring AI BOM 관리, PDFBox 3.x)
+    implementation("org.springframework.ai:spring-ai-pdf-document-reader")
     runtimeOnly("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")

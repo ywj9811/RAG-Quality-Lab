@@ -43,6 +43,7 @@ export default function AdminLayout() {
         <NavLink to="/admin" end>
           대시보드
         </NavLink>
+        <NavLink to="/admin/documents">문서</NavLink>
         <span className="muted">{auth.me.username}</span>
         <button type="button" onClick={onLogout}>
           로그아웃
