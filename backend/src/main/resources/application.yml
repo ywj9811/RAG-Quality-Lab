@@ -113,6 +113,10 @@ app:
     per-session-per-minute: 5
     sessions-per-ip-per-hour: 20
     ip-hash-salt: ${RQL_IP_HASH_SALT:}
+  retention:
+    chat-retention: ${RQL_CHAT_RETENTION:90d}
+    deleted-document-retention: ${RQL_DELETED_DOCUMENT_RETENTION:30d}
+    cron: "0 0 4 * * *"
   quota:
     # Gemini 무료 한도의 약 60% (docs/phase0/01 1.2절)
     daily-generation-calls: ${RQL_DAILY_GENERATION_CALLS:300}

@@ -35,10 +35,11 @@ describe("App routes", () => {
     expect(await screen.findByRole("heading", { name: "관리자 로그인" })).toBeInTheDocument();
   });
 
-  it("shows the admin page and username when logged in", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(json({ username: "admin" })));
+  it("shows the dashboard and username when logged in", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (url: string) =>
+      url === "/api/admin/auth/me" ? json({ username: "admin" }) : json({ code: "X", detail: "x" }, 500)));
     renderAt("/admin");
-    expect(await screen.findByRole("heading", { name: "관리자" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "대시보드" })).toBeInTheDocument();
     expect(screen.getByText("admin")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "로그아웃" })).toBeInTheDocument();
   });

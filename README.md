@@ -80,7 +80,8 @@ docker compose --profile app down -v       # 이 프로젝트 볼륨까지 삭�
 |---|---|---|
 | `cd backend && ./gradlew test` | 단위 + 통합(Testcontainers pgvector) | Docker |
 | `cd backend && ./gradlew ollamaTest` | 실제 Ollama 임베딩 확인 + 골든셋 검색 회귀(Recall@5·MRR, 결과 `backend/build/reports/retrieval-regression.json`) | Ollama 실행 + 모델 pull |
-| `cd backend && RQL_ENV_FILE=../.env ./gradlew externalTest` | Gemini 실제 호출 1회 (수동 전용, 무료 한도 소모) | `.env`의 `GEMINI_API_KEY` |
+| `cd backend && RQL_ENV_FILE=../.env ./gradlew externalTest --tests '*GeminiGenerationExternal*'` | Gemini 실제 호출 1회 (수동 전용, 무료 한도 소모) | `.env`의 `GEMINI_API_KEY` |
+| `cd backend && RQL_ENV_FILE=../.env ./gradlew externalTest --tests '*GenerationRegression*'` | 골든 질문 40개 생성 회귀(기대 동작 일치율·인용률, 결과 `backend/build/reports/generation-regression.json`). 생성 호출 최대 40회, 약 5분 | Ollama + `GEMINI_API_KEY` |
 | `cd frontend && npm test` | 프론트 단위 테스트 | Node 24 |
 | `cd frontend && npm run typecheck && npm run build` | 타입 검사, 빌드 | Node 24 |
 
@@ -106,6 +107,7 @@ CI(GitHub Actions)는 `test`와 프론트 검사만 실행하며 비밀값을 �
 | `app.rag.*` | 직전 대화 6개(3000자), 최소 유사도 0.35, 개인정보 형태 차단 | 답변 생성 설정 |
 | `app.llm.generation.*` | 출력 1024토큰, temperature 0.2, 30초, thinking MINIMAL, 허용 모델 목록 | 생성 모델 설정 (ADR-0004) |
 | `app.llm.judge.*` (`RQL_JUDGE_MODEL`) | `gemini-3.6-flash`, 출력 2048토큰, temperature 0, 60초, thinking LOW, JSON 응답 | 평가 모델 설정. 생성과 분리 (ADR-0004). 무료 RPD 20이라 재시도하지 않음 |
+| `RQL_CHAT_RETENTION` / `RQL_DELETED_DOCUMENT_RETENTION` | `90d` / `30d` | 대화 보관 기간 / 삭제 문서 파일·벡터 보관 기간. 매일 04:00 정리 |
 | `RQL_IP_HASH_SALT` | (빈 값 = 기동마다 무작위) | 방문자 IP 해시 솔트 |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | 호스트 실행 시 Ollama 주소 |
 | `app.ollama.health-timeout` | `2s` | Ollama 헬스체크 대기 상한 |
