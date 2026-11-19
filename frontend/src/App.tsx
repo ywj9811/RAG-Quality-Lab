@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router";
-import VisitorHome from "./pages/VisitorHome";
+import VisitorChat from "./pages/VisitorChat";
 import AdminHome from "./pages/AdminHome";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -10,7 +10,7 @@ import NotFound from "./pages/NotFound";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<VisitorHome />} />
+      <Route path="/" element={<VisitorChat />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminHome />} />

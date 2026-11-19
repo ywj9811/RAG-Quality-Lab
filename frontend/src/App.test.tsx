@@ -21,7 +21,9 @@ function renderAt(path: string) {
 describe("App routes", () => {
   it("shows the visitor notice on /", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline")));
+    sessionStorage.clear();
     renderAt("/");
+    await screen.findByRole("button", { name: "대화 시작하기" });
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("RAG Quality Lab");
     expect(screen.getByText(/개인정보·회사 기밀을 입력하지 마세요/)).toBeInTheDocument();
     expect(await screen.findByText(/시스템 상태:/)).toBeInTheDocument();
