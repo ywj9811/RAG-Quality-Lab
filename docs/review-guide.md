@@ -78,8 +78,20 @@ com.ragqualitylab
 | #11 | 3 | 방문자 채팅 화면 | Claude Code |
 | #12 | 4 | 관리자 대화 목록·상세 | Claude Code |
 | #13 | 5 | LLM-as-a-Judge 수동 평가 | Claude Code |
+| #14 | 5 | Judge 모델 환경변수 연결, 실제 호출 기록 | Claude Code |
 
-## 5. 검수 시 추천 순서
+## 5. 실제 외부 호출 기록 (개발 확인용)
+
+| 일시 | 대상 | 결과 |
+|---|---|---|
+| 2026-11-19 | 생성 `gemini-3.5-flash-lite` 2회 | 정상. 범위 안 질문 ANSWERED(2.8초), 범위 밖 INSUFFICIENT_EVIDENCE(1.5초) |
+| 2026-11-19 | Judge `gemini-3.6-flash` 3회 | 실패: 503 "high demand" 2회, 60초 시간 초과 1회. 앱은 FAILED로 기록, 유료 전환 없음 |
+| 2026-11-19 | Judge `gemini-3.8-flash` 1회 (환경변수로 임시 지정) | 60초 시간 초과 |
+| 2026-11-19 | **진단용** Judge를 `gemini-3.5-flash-lite`로 임시 지정 1회 | 정상 완료(2.6초, 100점). 파이프라인(입력 구성·JSON 검증·저장·화면) 확인용이며 생성과 같은 모델이라 실제 평가로 보지 않는다. DB의 해당 평가 행은 `judge_model_id=gemini-3.5-flash-lite`로 구분된다 |
+
+Judge 기본 모델은 `gemini-3.6-flash`로 유지한다. Google 쪽 일시적 과부하로 보이며, 계속되면 ADR-0004 변경을 제안한다.
+
+## 6. 검수 시 추천 순서
 1. 이 문서 2·3절로 구조 파악
 2. 관심 있는 PR 본문의 "설계 선택"과 "알려진 리스크"
 3. 해당 모듈의 통합 테스트(동작 명세 역할): 예) `DocumentIngestionIntegrationTests`, `AdminAuthIntegrationTests`
