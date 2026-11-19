@@ -22,10 +22,10 @@ import tools.jackson.databind.json.JsonMapper;
 
 /**
  * 보안 기본값.
- * - 헬스체크·관리자 로그인/CSRF 발급만 공개, 그 외 관리자 API는 ROLE_ADMIN, 정의되지 않은 경로는 거부
+ * - 헬스체크·CSRF 발급·관리자 로그인·방문자 채팅만 공개, 그 외 관리자 API는 ROLE_ADMIN, 정의되지 않은 경로는 거부
  * - 관리자 인증은 서버 세션(쿠키 rql_admin), 401/403/423은 Problem Details JSON
  * - CSRF는 SPA용 쿠키 방식(XSRF-TOKEN 쿠키 → X-XSRF-TOKEN 헤더). 로그인 요청도 CSRF 검증 대상
- * 방문자 채팅 경로의 인증·CSRF 정책은 Phase 3(ADR-0006)에서 추가한다.
+ * 방문자 채팅도 CSRF 검증 대상이다(세션 쿠키 SameSite=Strict와 함께 이중 방어).
  */
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
@@ -36,7 +36,9 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
-                .requestMatchers("/api/admin/auth/login", "/api/admin/auth/csrf").permitAll()
+                .requestMatchers("/api/csrf", "/api/admin/auth/login").permitAll()
+                // 방문자 채팅: 인증은 세션 토큰 쿠키로 애플리케이션에서 확인한다 (ADR-0006)
+                .requestMatchers("/api/chat/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().denyAll())
             .securityContext(ctx -> ctx.securityContextRepository(securityContextRepository))

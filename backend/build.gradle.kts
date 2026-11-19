@@ -53,7 +53,7 @@ dependencyManagement {
     }
 }
 
-// 테스트는 개발자 로컬 .env(비밀값·개인 설정)를 읽지 않는다
+// 테스트는 개발자 로컬 .env(비밀값·개인 설정)를 읽지 않는다. externalTest만 RQL_ENV_FILE로 지정할 수 있다
 tasks.withType<Test>().configureEach {
     environment("RQL_ENV_FILE", layout.buildDirectory.file("no-env-file").get().asFile.absolutePath)
 }
@@ -81,4 +81,5 @@ val externalTest by tasks.registering(Test::class) {
     testClassesDirs = sourceSets.test.get().output.classesDirs
     classpath = sourceSets.test.get().runtimeClasspath
     useJUnitPlatform { includeTags("external") }
+    System.getenv("RQL_ENV_FILE")?.let { environment("RQL_ENV_FILE", file(it).absolutePath) }
 }

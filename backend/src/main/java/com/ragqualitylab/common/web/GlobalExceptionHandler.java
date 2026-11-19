@@ -2,7 +2,9 @@ package com.ragqualitylab.common.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,8 +20,14 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ApiException.class)
-    ProblemDetail handleApi(ApiException e) {
-        return ProblemDetails.of(e.code(), e.getMessage());
+    ResponseEntity<ProblemDetail> handleApi(ApiException e) {
+        ProblemDetail problem = ProblemDetails.of(e.code(), e.getMessage());
+        var response = ResponseEntity.status(e.code().status());
+        if (e.retryAfterSeconds() != null) {
+            problem.setProperty("retryAfterSeconds", e.retryAfterSeconds());
+            response.header(HttpHeaders.RETRY_AFTER, String.valueOf(e.retryAfterSeconds()));
+        }
+        return response.body(problem);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

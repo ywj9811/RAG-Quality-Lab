@@ -10,7 +10,7 @@
 - 인증
   - 방문자: 쿠키 `rql_chat`(HttpOnly, SameSite=Strict, Path=/api/chat). 토큰이 URL·본문·로그에 나타나지 않음.
   - 관리자: Spring Security 서버 세션 쿠키 `rql_admin`(HttpOnly, SameSite=Strict) + **CSRF 토큰**(쿠키→헤더 `X-XSRF-TOKEN`). 유휴 30분 만료.
-- 방문자 API도 상태 변경 요청은 SameSite=Strict + `Origin` 헤더 검사로 CSRF 방어.
+- CSRF 토큰 발급: `GET /api/csrf` → `204` + `XSRF-TOKEN` 쿠키. 관리자·방문자 API 모두 상태 변경 요청에 `X-XSRF-TOKEN` 헤더가 필요하다(방문자 세션 쿠키 SameSite=Strict와 이중 방어). Phase 3 구현 시 확정.
 
 ### 공통 오류 코드
 | HTTP | code | 상황 |
@@ -55,6 +55,8 @@
 }
 ```
 - `answerType=INSUFFICIENT_EVIDENCE`이면 `citations=[]`, 안내 문구 반환 (LLM 미호출 가능).
+- 질문 검증: 공백 제외 1~1000자, 이메일·휴대전화·주민등록번호 형태가 있으면 `400 PERSONAL_INFO_DETECTED`(외부 전송 전 차단).
+- 같은 세션에서 직전 질문을 처리 중이면 `409 MESSAGE_IN_PROGRESS`. 분당 상한 초과는 `429 RATE_LIMITED` + `Retry-After`.
 - 답변 생성 실패 시 질문은 저장하고 `503/504` 반환(답변 메시지는 `answerType=ERROR`로 기록).
 
 ### POST `/api/chat/sessions/{id}/close` — 종료 (CHAT-07)
@@ -64,7 +66,6 @@
 
 | 메서드 | 경로 | 요청 | 응답 |
 |---|---|---|---|
-| GET | `/api/admin/auth/csrf` | — | `204` + XSRF 쿠키 |
 | POST | `/api/admin/auth/login` | `{username,password}` | `200 {username}` / `401` / `423` |
 | POST | `/api/admin/auth/logout` | — | `204` |
 | GET | `/api/admin/auth/me` | — | `200 {username}` / `401` |

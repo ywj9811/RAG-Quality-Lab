@@ -20,7 +20,7 @@ function readCookie(name: string): string | null {
 async function ensureXsrfToken(): Promise<string> {
   const existing = readCookie(XSRF_COOKIE);
   if (existing) return existing;
-  await fetch("/api/admin/auth/csrf", { credentials: "same-origin" });
+  await fetch("/api/csrf", { credentials: "same-origin" });
   const issued = readCookie(XSRF_COOKIE);
   if (!issued) throw new ApiError(0, "CSRF_UNAVAILABLE", "보안 토큰을 받지 못했습니다. 새로고침해 주세요.");
   return issued;

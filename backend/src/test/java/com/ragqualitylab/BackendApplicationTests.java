@@ -35,6 +35,12 @@ class BackendApplicationTests {
     }
 
     @Test
+    void geminiGenerationAdapterIsRegistered() {
+        assertThat(context.getBeansOfType(com.ragqualitylab.llm.generation.GenerationModelPort.class).values())
+            .singleElement().isInstanceOf(com.ragqualitylab.llm.generation.GeminiGenerationAdapter.class);
+    }
+
+    @Test
     void embeddingModelIsOllamaOnly() {
         assertThat(context.getBeansOfType(EmbeddingModel.class).values())
             .singleElement().isInstanceOf(OllamaEmbeddingModel.class);

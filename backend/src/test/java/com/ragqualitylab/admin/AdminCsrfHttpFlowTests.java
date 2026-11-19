@@ -35,7 +35,7 @@ class AdminCsrfHttpFlowTests {
         var cookies = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
         var client = HttpClient.newBuilder().cookieHandler(cookies).build();
 
-        HttpResponse<String> csrf = client.send(get("/api/admin/auth/csrf"), HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> csrf = client.send(get("/api/csrf"), HttpResponse.BodyHandlers.ofString());
         assertThat(csrf.statusCode()).isEqualTo(204);
         String setCookie = csrf.headers().firstValue("set-cookie").orElseThrow();
         assertThat(setCookie).startsWith("XSRF-TOKEN=").doesNotContainIgnoringCase("HttpOnly");
