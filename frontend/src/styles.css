@@ -46,3 +46,7 @@ th, td { text-align: left; padding: 8px; border-bottom: 1px solid #d0d7de; verti
 .composer { display: flex; flex-direction: column; gap: 4px; }
 .composer textarea { font: inherit; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; resize: vertical; }
 .composer-row { display: flex; justify-content: space-between; align-items: center; }
+.truncate { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pager { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
+.snapshots { padding-left: 20px; }
+pre.snippet { font: inherit; font-size: 0.85rem; background: #fff; border: 1px solid #eaeef2; padding: 6px; max-height: 160px; overflow: auto; }

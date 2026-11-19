@@ -90,7 +90,7 @@
 
 | 메서드 | 경로 | 설명 |
 |---|---|---|
-| GET | `/api/admin/chats` | `?from=&to=&status=&page=&size=` → 세션 요약(메시지 수, 마지막 활동, 평가 수) |
+| GET | `/api/admin/chats` | `?from=&to=&status=&page=&size=` → 세션 요약(질문 수, 오류 수, 첫 질문 80자, 마지막 활동). `from`·`to`는 한국 시간 날짜(`yyyy-MM-dd`, `to`는 그날 끝까지), 평가 수는 Phase 5에서 추가 |
 | GET | `/api/admin/chats/{sessionId}` | 메시지 전체 + 답변별 검색 스냅샷 + 최신 평가 요약 |
 
 ## 5. 관리자 평가 (ADM-04~06, EVAL-01~05)
