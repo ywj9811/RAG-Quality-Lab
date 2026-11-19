@@ -22,7 +22,7 @@ Claude Code가 직접 머지한 작업을 오너가 나중에 확인하기 위�
 ```text
 com.ragqualitylab
 ├─ common/         보안 설정, 오류 코드·Problem Details 응답
-├─ admin/          관리자 계정·로그인·잠금·초기 계정 생성
+├─ admin/          관리자 계정·로그인·잠금·초기 계정 생성, 대화 조회(admin/chat)
 ├─ document/       업로드 검증, 텍스트 추출, 청크 분할, 비동기 처리, 문서 API
 ├─ retrieval/      질의 임베딩 + 벡터 검색
 ├─ chat/           익명 세션·토큰, 질문→검색→생성→저장, 프롬프트 조립, 인용 검증
@@ -40,6 +40,7 @@ com.ragqualitylab
 | retrieval | `ChunkSearchRepository` | Spring AI VectorStore 대신 자체 SQL (ADR-0005) |
 | llm | `EmbeddingPort`, `GenerationModelPort` | 모델을 바꿔도 다른 모듈은 포트만 의존 |
 | chat | `ChatService.ask` | 질문 저장(세션 행 잠금)과 답변 저장은 짧은 트랜잭션, 외부 호출은 트랜잭션 밖. 실패해도 ERROR 답변을 남김 |
+| admin | `AdminChatQueryService` | 화면용 읽기 모델은 엔티티 대신 SQL로 필요한 필드만 조회. 관리자는 종료·만료 세션도 조회 |
 | chat | `ChatSessionService` | 토큰 원문 미저장(해시), 토큰 불일치·없는 세션 모두 404, 종료·만료 410 |
 | chat | `PromptBuilder`, `CitationParser` | 근거·질문을 태그 블록에 넣고 태그 흉내를 이스케이프, 범위 밖 인용 번호 제거 |
 | llm | `LlmBudget` | 예약 행을 먼저 넣고 advisory lock으로 직렬화해 동시 요청에도 일일 상한을 넘지 않음 |
@@ -70,6 +71,7 @@ com.ragqualitylab
 | #9 | — | 검수 안내 PR 기록 갱신 (CI 완료 전에 머지한 규칙 위반 1건, 사후 CI 통과 확인) | Claude Code |
 | #10 | 3 | 익명 세션, RAG 답변 생성, 호출 예산 | Claude Code |
 | #11 | 3 | 방문자 채팅 화면 | Claude Code |
+| #12 | 4 | 관리자 대화 목록·상세 | Claude Code |
 
 ## 5. 검수 시 추천 순서
 1. 이 문서 2·3절로 구조 파악
