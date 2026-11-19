@@ -131,7 +131,8 @@
   "usage":{"today":{"generationCalls":37,"judgeCalls":6,"generationBudget":200,"judgeBudget":50}}
 }
 ```
-- 평균은 **답변별 최신 COMPLETED 평가 1건, 루브릭 버전별** 계산.
+- 평균은 **답변별 최신 COMPLETED 평가 1건, 현재 루브릭 버전** 기준. `from`·`to`는 한국 시간 날짜(기본 최근 7일).
+- 구현 응답 필드: `totals`(sessions·questions·failedAnswers·insufficientEvidence·evaluations·failedEvaluations), `quality`(criteriaAverage·criteriaMax 포함), `lowScores`(최대 5건, sessionId 포함), `usage`(오늘 기준).
 
 ## 7. 헬스체크
 - `GET /actuator/health` (DB, Ollama 연결 상태 포함; 외부 Gemini는 호출하지 않음 — 무료 한도 보호).

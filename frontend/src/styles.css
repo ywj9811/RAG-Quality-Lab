@@ -51,3 +51,11 @@ th, td { text-align: left; padding: 8px; border-bottom: 1px solid #d0d7de; verti
 .snapshots { padding-left: 20px; }
 pre.snippet { font: inherit; font-size: 0.85rem; background: #fff; border: 1px solid #eaeef2; padding: 6px; max-height: 160px; overflow: auto; }
 .eval-control { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { border: 1px solid #d0d7de; border-radius: 8px; padding: 12px; }
+.card-bad { border-color: #cf222e; }
+.card-value { font-size: 1.6rem; font-weight: 600; }
+.meter-row { display: grid; grid-template-columns: 110px 1fr 80px; gap: 8px; align-items: center; margin: 6px 0; }
+.meter { display: block; height: 10px; background: #eaeef2; border-radius: 5px; overflow: hidden; }
+.meter-fill { display: block; height: 100%; background: #0969da; }
+.meter-value { text-align: right; font-variant-numeric: tabular-nums; }

@@ -2,7 +2,7 @@
 
 Claude Code가 직접 머지한 작업을 오너가 나중에 확인하기 위한 안내다. 설계 의도는 `docs/phase0/`와 `docs/adr/`에 있고, 이 문서는 **실제로 구현된 구조**와 **어디를 보면 되는지**만 적는다. 기능이 추가될 때마다 갱신한다.
 
-- 최종 갱신: 2026-11-19 (Phase 5)
+- 최종 갱신: 2026-11-19 (Phase 6, MVP 마감). 완료 기준·측정·보안 점검은 [`docs/report/mvp-report.md`](report/mvp-report.md)
 
 ## 1. 개발 방식
 
@@ -21,8 +21,8 @@ Claude Code가 직접 머지한 작업을 오너가 나중에 확인하기 위�
 
 ```text
 com.ragqualitylab
-├─ common/         보안 설정, 오류 코드·Problem Details 응답
-├─ admin/          관리자 계정·로그인·잠금·초기 계정 생성, 대화 조회(admin/chat)
+├─ common/         보안 설정, 오류 코드·Problem Details 응답, 요청 제한기, 보관 기간 정리(retention)
+├─ admin/          관리자 계정·로그인·잠금·초기 계정 생성, 대화 조회(admin/chat), 대시보드(admin/dashboard)
 ├─ document/       업로드 검증, 텍스트 추출, 청크 분할, 비동기 처리, 문서 API
 ├─ retrieval/      질의 임베딩 + 벡터 검색
 ├─ chat/           익명 세션·토큰, 질문→검색→생성→저장, 프롬프트 조립, 인용 검증
@@ -79,6 +79,7 @@ com.ragqualitylab
 | #12 | 4 | 관리자 대화 목록·상세 | Claude Code |
 | #13 | 5 | LLM-as-a-Judge 수동 평가 | Claude Code |
 | #14 | 5 | Judge 모델 환경변수 연결, 실제 호출 기록 | Claude Code |
+| #15 | 6 | 대시보드, 보관 기간 정리, 생성 회귀, MVP 보고서 | Claude Code |
 
 ## 5. 실제 외부 호출 기록 (개발 확인용)
 
