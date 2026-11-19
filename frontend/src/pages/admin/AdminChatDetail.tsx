@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { adminChats, ANSWER_TYPE_LABEL, type MessageDetail, SESSION_STATUS_LABEL, type SessionDetail } from "../../api/adminChats";
 import { ApiError } from "../../api/client";
+import EvaluationControl from "./EvaluationControl";
 
 const dateTime = new Intl.DateTimeFormat("ko-KR", { dateStyle: "short", timeStyle: "medium" });
 
@@ -40,7 +41,7 @@ function Snapshots({ m }: { m: MessageDetail }) {
   );
 }
 
-// 06_wireframes.md 7절 (상세). 평가 요청은 Phase 5에서 추가한다.
+// 06_wireframes.md 7절 (상세)
 export default function AdminChatDetail() {
   const { id } = useParams();
   const [data, setData] = useState<SessionDetail | null>(null);
@@ -96,6 +97,7 @@ export default function AdminChatDetail() {
               <div className="msg-text">{m.content}</div>
               <AnswerMeta m={m} />
               <Snapshots m={m} />
+              {m.answerType !== "ERROR" && <EvaluationControl messageId={m.id} latest={m.latestEvaluation} />}
             </div>
           );
         })}

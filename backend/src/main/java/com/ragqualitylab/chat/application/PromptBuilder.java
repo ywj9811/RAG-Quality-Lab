@@ -1,5 +1,6 @@
 package com.ragqualitylab.chat.application;
 
+import com.ragqualitylab.llm.common.PromptBlocks;
 import com.ragqualitylab.llm.generation.GenerationRequest;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -62,13 +63,12 @@ public class PromptBuilder {
         return new GenerationRequest(systemPrompt, user.toString());
     }
 
-    /** 블록 태그를 흉내 낸 문자열을 무력화한다. */
     static String escape(String text) {
-        return text.replaceAll("(?i)<(/?)(sources|source|history|question)", "&lt;$1$2");
+        return PromptBlocks.escape(text);
     }
 
     private static String escapeAttr(String text) {
-        return escape(text).replace("\"", "'");
+        return PromptBlocks.escapeAttr(text);
     }
 
     static List<String> blockTags() {

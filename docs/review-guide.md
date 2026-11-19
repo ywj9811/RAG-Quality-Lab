@@ -2,7 +2,7 @@
 
 Claude Code가 직접 머지한 작업을 오너가 나중에 확인하기 위한 안내다. 설계 의도는 `docs/phase0/`와 `docs/adr/`에 있고, 이 문서는 **실제로 구현된 구조**와 **어디를 보면 되는지**만 적는다. 기능이 추가될 때마다 갱신한다.
 
-- 최종 갱신: 2026-11-19 (Phase 3 완료)
+- 최종 갱신: 2026-11-19 (Phase 5)
 
 ## 1. 개발 방식
 
@@ -26,9 +26,12 @@ com.ragqualitylab
 ├─ document/       업로드 검증, 텍스트 추출, 청크 분할, 비동기 처리, 문서 API
 ├─ retrieval/      질의 임베딩 + 벡터 검색
 ├─ chat/           익명 세션·토큰, 질문→검색→생성→저장, 프롬프트 조립, 인용 검증
+├─ evaluation/     수동 평가 요청·실행·이력, 루브릭, Judge 응답 검증
 └─ llm/            외부 모델 포트와 어댑터
    ├─ embedding/   EmbeddingPort ← OllamaEmbeddingAdapter
-   ├─ generation/  GenerationModelPort ← GeminiGenerationAdapter (Judge 포트는 Phase 5에서 별도)
+   ├─ generation/  GenerationModelPort ← GeminiGenerationAdapter
+   ├─ judge/       JudgeModelPort ← GeminiJudgeAdapter (생성과 별도 포트·설정·프롬프트)
+   ├─ common/      호출 시간 제한·실패 분류, 프롬프트 블록 이스케이프
    └─ usage/       LlmBudget: 분당·일일 호출 예산, llm_usage_records 기록
 ```
 
@@ -43,6 +46,8 @@ com.ragqualitylab
 | admin | `AdminChatQueryService` | 화면용 읽기 모델은 엔티티 대신 SQL로 필요한 필드만 조회. 관리자는 종료·만료 세션도 조회 |
 | chat | `ChatSessionService` | 토큰 원문 미저장(해시), 토큰 불일치·없는 세션 모두 404, 종료·만료 410 |
 | chat | `PromptBuilder`, `CitationParser` | 근거·질문을 태그 블록에 넣고 태그 흉내를 이스케이프, 범위 밖 인용 번호 제거 |
+| evaluation | `EvaluationService`, `EvaluationRunner` | 진행 중 중복은 부분 유니크 인덱스로 막고 409에 기존 ID. Judge 호출은 트랜잭션 밖, 재시도 없음 |
+| evaluation | `JudgeOutputParser`, `Rubric` | 항목·정수·범위·사유 검증, 총점은 서버 합산(모델 총점 무시). 루브릭은 `rubric/v1.json` |
 | llm | `LlmBudget` | 예약 행을 먼저 넣고 advisory lock으로 직렬화해 동시 요청에도 일일 상한을 넘지 않음 |
 
 ## 3. 데이터 구조
@@ -54,7 +59,7 @@ com.ragqualitylab
 
 | `chat_sessions`, `chat_messages`, `retrieval_records`, `llm_usage_records` | V4 | `llm_usage_records.status`에 `RESERVED`(호출 전 예약) 추가 |
 
-평가 테이블은 Phase 5에서 추가한다 (`docs/phase0/04_erd.md`).
+| `evaluations`, `evaluation_scores` | V5 | 진행 중 평가 부분 유니크 인덱스 추가 |
 
 ## 4. PR 기록
 
@@ -72,6 +77,7 @@ com.ragqualitylab
 | #10 | 3 | 익명 세션, RAG 답변 생성, 호출 예산 | Claude Code |
 | #11 | 3 | 방문자 채팅 화면 | Claude Code |
 | #12 | 4 | 관리자 대화 목록·상세 | Claude Code |
+| #13 | 5 | LLM-as-a-Judge 수동 평가 | Claude Code |
 
 ## 5. 검수 시 추천 순서
 1. 이 문서 2·3절로 구조 파악

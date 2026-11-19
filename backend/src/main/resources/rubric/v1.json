@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "criteria": [
+    {"key": "faithfulness", "label": "근거 충실성", "maxScore": 35,
+     "question": "답변의 구체적 주장이 제공된 근거에서 뒷받침되는가?"},
+    {"key": "relevance", "label": "질문 관련성", "maxScore": 25,
+     "question": "사용자의 실제 질문에 직접 답하는가?"},
+    {"key": "completeness", "label": "완전성", "maxScore": 20,
+     "question": "근거로 답할 수 있는 요구사항을 빠뜨리지 않았는가?"},
+    {"key": "citationAccuracy", "label": "인용 정확성", "maxScore": 20,
+     "question": "답변에 표시한 인용 번호가 주장에 대응하는 근거를 가리키는가?"}
+  ]
+}

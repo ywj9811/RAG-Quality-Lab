@@ -9,7 +9,7 @@ function json(body: unknown, status = 200): Response {
 
 const summary = (i: number) => ({
   id: `s${i}`, status: "CLOSED", createdAt: "2026-11-18T01:00:00Z", lastActivityAt: "2026-11-18T01:10:00Z",
-  closedAt: "2026-11-18T01:12:00Z", questionCount: 3, errorCount: i === 0 ? 1 : 0, firstQuestion: `질문 ${i}`,
+  closedAt: "2026-11-18T01:12:00Z", questionCount: 3, errorCount: i === 0 ? 1 : 0, evaluationCount: 0, firstQuestion: `질문 ${i}`,
 });
 
 afterEach(() => vi.unstubAllGlobals());
@@ -41,10 +41,10 @@ describe("AdminChats", () => {
       closedAt: "2026-11-18T01:12:00Z",
       messages: [
         { id: "q", seq: 1, role: "USER", content: "기본 전파 속성은?", answerType: null, modelId: null, promptVersion: null,
-          retrievalQuery: null, inputTokens: null, outputTokens: null, latencyMs: null, errorCode: null, createdAt: "x", retrieval: [] },
+          retrievalQuery: null, inputTokens: null, outputTokens: null, latencyMs: null, errorCode: null, createdAt: "x", retrieval: [], latestEvaluation: null },
         { id: "a", seq: 2, role: "ASSISTANT", content: "REQUIRED입니다 [1]", answerType: "ANSWERED",
           modelId: "gemini-3.5-flash-lite", promptVersion: "gen-v1@abcd1234", retrievalQuery: "기본 전파 속성은?",
-          inputTokens: 812, outputTokens: 164, latencyMs: 2300, errorCode: null, createdAt: "x",
+          inputTokens: 812, outputTokens: 164, latencyMs: 2300, errorCode: null, createdAt: "x", latestEvaluation: null,
           retrieval: [{ rank: 1, score: 0.82, cited: true, documentId: null, chunkAvailable: false, filename: "04_transaction.md",
             documentVersion: 2, sourceLocator: { heading: "전파 속성", page: null }, text: "REQUIRED가 기본" }] },
       ],

@@ -6,6 +6,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDocuments from "./pages/admin/AdminDocuments";
 import AdminChats from "./pages/admin/AdminChats";
 import AdminChatDetail from "./pages/admin/AdminChatDetail";
+import AdminEvaluation from "./pages/admin/AdminEvaluation";
 import NotFound from "./pages/NotFound";
 
 // 라우트 구성은 docs/phase0/06_wireframes.md 1절을 따른다.
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="documents" element={<AdminDocuments />} />
         <Route path="chats" element={<AdminChats />} />
         <Route path="chats/:id" element={<AdminChatDetail />} />
+        <Route path="evaluations/:id" element={<AdminEvaluation />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -105,6 +105,7 @@ CI(GitHub Actions)는 `test`와 프론트 검사만 실행하며 비밀값을 �
 | `app.chat.*` | 유휴 30분·최대 24시간, 질문 1000자, IP 분당 10·세션 분당 5·IP 시간당 세션 20 | 방문자 세션·요청 제한 (ADR-0006·0007) |
 | `app.rag.*` | 직전 대화 6개(3000자), 최소 유사도 0.35, 개인정보 형태 차단 | 답변 생성 설정 |
 | `app.llm.generation.*` | 출력 1024토큰, temperature 0.2, 30초, thinking MINIMAL, 허용 모델 목록 | 생성 모델 설정 (ADR-0004) |
+| `app.llm.judge.*` (`RQL_JUDGE_MODEL`) | `gemini-3.6-flash`, 출력 2048토큰, temperature 0, 60초, thinking LOW, JSON 응답 | 평가 모델 설정. 생성과 분리 (ADR-0004). 무료 RPD 20이라 재시도하지 않음 |
 | `RQL_IP_HASH_SALT` | (빈 값 = 기동마다 무작위) | 방문자 IP 해시 솔트 |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | 호스트 실행 시 Ollama 주소 |
 | `app.ollama.health-timeout` | `2s` | Ollama 헬스체크 대기 상한 |
