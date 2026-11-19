@@ -173,7 +173,7 @@ RAG-Quality-Lab/
 | `app.llm.generation.model` / `max-output-tokens` / `timeout` | gemini-3.5-flash-lite / 1024 / 30s | |
 | `app.llm.judge.model` / `max-output-tokens` / `timeout` | gemini-3.6-flash / 2048 / 60s | |
 | `app.llm.max-retries` | 1 | 429/5xx에만 |
-| `app.quota.daily-generation-calls` / `daily-judge-calls` | 오너 RPD 확인 후 결정 (잠정 200 / 50) | 초과 시 fail closed |
+| `app.quota.daily-generation-calls` / `daily-judge-calls` | 300 / 12 (RPD 500 / 20의 60%, `01` 문서 1.2절) | 초과 시 fail closed |
 | `app.quota.per-ip-per-minute` / `per-session-per-minute` | 10 / 5 | |
 | `app.retention.chat-days` / `deleted-file-days` | 90 / 30 | |
 | `app.upload.max-bytes` | 10MB | |
