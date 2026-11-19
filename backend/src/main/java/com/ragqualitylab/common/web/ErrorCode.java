@@ -18,6 +18,16 @@ public enum ErrorCode {
     DUPLICATE_DOCUMENT(HttpStatus.CONFLICT, "중복된 문서입니다"),
     FILE_TOO_LARGE(HttpStatus.CONTENT_TOO_LARGE, "파일이 너무 큽니다"),
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "지원하지 않는 파일 형식입니다"),
+    MESSAGE_IN_PROGRESS(HttpStatus.CONFLICT, "이전 질문을 처리하는 중입니다"),
+    SESSION_CLOSED(HttpStatus.GONE, "종료된 대화입니다"),
+    SESSION_EXPIRED(HttpStatus.GONE, "만료된 대화입니다"),
+    PERSONAL_INFO_DETECTED(HttpStatus.BAD_REQUEST, "개인정보로 보이는 내용이 있습니다"),
+    RATE_LIMITED(HttpStatus.TOO_MANY_REQUESTS, "요청 한도를 초과했습니다"),
+    DAILY_QUOTA_EXCEEDED(HttpStatus.SERVICE_UNAVAILABLE, "오늘 사용 한도를 모두 사용했습니다"),
+    UPSTREAM_RATE_LIMITED(HttpStatus.SERVICE_UNAVAILABLE, "외부 AI 서비스 한도에 도달했습니다"),
+    UPSTREAM_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "외부 AI 서비스에 연결할 수 없습니다"),
+    EMBEDDING_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "임베딩 서버에 연결할 수 없습니다"),
+    UPSTREAM_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "외부 AI 서비스 응답이 늦습니다"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다");
 
     private final HttpStatus status;

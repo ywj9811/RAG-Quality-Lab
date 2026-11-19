@@ -33,7 +33,7 @@ spring:
       genai:
         api-key: ${GEMINI_API_KEY:}
         chat:
-          model: ${RQL_GENERATION_MODEL:gemini-3.5-flash-lite}
+          model: ${app.llm.generation.model}
     ollama:
       base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
       init:
@@ -41,9 +41,18 @@ spring:
         pull-model-strategy: never
       embedding:
         model: ${RQL_EMBEDDING_MODEL:qwen3-embedding:0.6b}
+    retry:
+      # 재시도 최대 1회 (명세 2절: 무한 재시도 금지, Spring AI 기본값은 10회)
+      max-attempts: 2
+      backoff:
+        initial-interval: 2s
+        multiplier: 2
+        max-interval: 5s
 
 server:
   port: ${RQL_API_PORT:18080}
+  # 프록시(nginx·Vite) 뒤에서 실제 클라이언트 IP를 쓴다. Tomcat 기본값은 사설망·루프백 프록시만 신뢰한다
+  forward-headers-strategy: native
   # 호스트 실행 시 LAN에 노출하지 않는다 (ADR-0008). 컨테이너에서는 0.0.0.0
   address: ${RQL_API_BIND:127.0.0.1}
   servlet:
@@ -90,6 +99,35 @@ app:
     query-instruction: ${RQL_EMBEDDING_QUERY_INSTRUCTION:}
   retrieval:
     top-k: 5
+  rag:
+    context-messages: 6
+    max-context-chars: 3000
+    min-score: 0.35
+    block-personal-info: true
+  chat:
+    idle-timeout: 30m
+    max-lifetime: 24h
+    cookie-secure: ${RQL_COOKIE_SECURE:false}
+    max-question-chars: 1000
+    per-ip-per-minute: 10
+    per-session-per-minute: 5
+    sessions-per-ip-per-hour: 20
+    ip-hash-salt: ${RQL_IP_HASH_SALT:}
+  quota:
+    # Gemini 무료 한도의 약 60% (docs/phase0/01 1.2절)
+    daily-generation-calls: ${RQL_DAILY_GENERATION_CALLS:300}
+    daily-judge-calls: ${RQL_DAILY_JUDGE_CALLS:12}
+    generation-per-minute: 10
+    judge-per-minute: 4
+    reset-zone: America/Los_Angeles
+  llm:
+    generation:
+      model: ${RQL_GENERATION_MODEL:gemini-3.5-flash-lite}
+      max-output-tokens: 1024
+      temperature: 0.2
+      timeout: 30s
+      thinking-level: MINIMAL
+      allowed-models: [gemini-3.5-flash-lite, gemini-2.5-flash-lite]
   admin:
     max-failed-attempts: 5
     lock-duration: 15m

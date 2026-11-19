@@ -17,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,13 +38,6 @@ public class AdminAuthController {
     public AdminAuthController(AdminLoginService loginService, SecurityContextRepository securityContextRepository) {
         this.loginService = loginService;
         this.securityContextRepository = securityContextRepository;
-    }
-
-    /** XSRF-TOKEN 쿠키를 발급한다. 이후 상태 변경 요청은 X-XSRF-TOKEN 헤더에 값을 담는다. */
-    @GetMapping("/csrf")
-    public ResponseEntity<Void> csrf(CsrfToken token) {
-        token.getToken();
-        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/login")

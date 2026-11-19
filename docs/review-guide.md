@@ -2,7 +2,7 @@
 
 Claude Code가 직접 머지한 작업을 오너가 나중에 확인하기 위한 안내다. 설계 의도는 `docs/phase0/`와 `docs/adr/`에 있고, 이 문서는 **실제로 구현된 구조**와 **어디를 보면 되는지**만 적는다. 기능이 추가될 때마다 갱신한다.
 
-- 최종 갱신: 2026-11-19 (Phase 2 완료 시점)
+- 최종 갱신: 2026-11-19 (Phase 3 백엔드)
 
 ## 1. 개발 방식
 
@@ -24,8 +24,12 @@ com.ragqualitylab
 ├─ common/         보안 설정, 오류 코드·Problem Details 응답
 ├─ admin/          관리자 계정·로그인·잠금·초기 계정 생성
 ├─ document/       업로드 검증, 텍스트 추출, 청크 분할, 비동기 처리, 문서 API
-├─ retrieval/      질의 임베딩 + 벡터 검색 (Phase 3 채팅이 사용)
-└─ llm/            외부 모델 포트와 어댑터 (EmbeddingPort ← OllamaEmbeddingAdapter), Ollama 헬스체크
+├─ retrieval/      질의 임베딩 + 벡터 검색
+├─ chat/           익명 세션·토큰, 질문→검색→생성→저장, 프롬프트 조립, 인용 검증
+└─ llm/            외부 모델 포트와 어댑터
+   ├─ embedding/   EmbeddingPort ← OllamaEmbeddingAdapter
+   ├─ generation/  GenerationModelPort ← GeminiGenerationAdapter (Judge 포트는 Phase 5에서 별도)
+   └─ usage/       LlmBudget: 분당·일일 호출 예산, llm_usage_records 기록
 ```
 
 | 모듈 | 핵심 클래스 | 검수 포인트 |
@@ -34,7 +38,11 @@ com.ragqualitylab
 | document | `DocumentService`(업로드·삭제·재처리), `DocumentProcessor`(추출→청크→임베딩→저장) | 임베딩은 트랜잭션 밖, 청크 저장과 READY 전환은 한 트랜잭션. 삭제 즉시 검색 제외 |
 | document | `Chunker`, `UploadValidator` | 제목 경계 분할, 확장자 위장·크기·파일명 처리 |
 | retrieval | `ChunkSearchRepository` | Spring AI VectorStore 대신 자체 SQL (ADR-0005) |
-| llm | `EmbeddingPort` | 모델을 바꿔도 다른 모듈은 포트만 의존 |
+| llm | `EmbeddingPort`, `GenerationModelPort` | 모델을 바꿔도 다른 모듈은 포트만 의존 |
+| chat | `ChatService.ask` | 질문 저장(세션 행 잠금)과 답변 저장은 짧은 트랜잭션, 외부 호출은 트랜잭션 밖. 실패해도 ERROR 답변을 남김 |
+| chat | `ChatSessionService` | 토큰 원문 미저장(해시), 토큰 불일치·없는 세션 모두 404, 종료·만료 410 |
+| chat | `PromptBuilder`, `CitationParser` | 근거·질문을 태그 블록에 넣고 태그 흉내를 이스케이프, 범위 밖 인용 번호 제거 |
+| llm | `LlmBudget` | 예약 행을 먼저 넣고 advisory lock으로 직렬화해 동시 요청에도 일일 상한을 넘지 않음 |
 
 ## 3. 데이터 구조
 
@@ -43,7 +51,9 @@ com.ragqualitylab
 | `admin_users` | V2 | 없음 |
 | `documents`, `document_chunks` | V3 | `content_sha256`을 `varchar(64)` + 길이 CHECK로 둠(ERD는 char64). 청크 FK는 `ON DELETE CASCADE`(물리 삭제 배치용) |
 
-나머지 테이블(채팅·평가·사용량)은 해당 Phase에서 추가한다 (`docs/phase0/04_erd.md`).
+| `chat_sessions`, `chat_messages`, `retrieval_records`, `llm_usage_records` | V4 | `llm_usage_records.status`에 `RESERVED`(호출 전 예약) 추가 |
+
+평가 테이블은 Phase 5에서 추가한다 (`docs/phase0/04_erd.md`).
 
 ## 4. PR 기록
 

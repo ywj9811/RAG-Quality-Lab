@@ -8,3 +8,6 @@ spring:
       genai:
         # 자동설정 기동용 더미 값. 기본 test 태스크는 Gemini를 호출하지 않는다
         api-key: test-dummy-key-not-used
+app:
+  scheduling:
+    enabled: false
