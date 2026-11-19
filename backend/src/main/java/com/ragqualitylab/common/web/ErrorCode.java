@@ -19,6 +19,7 @@ public enum ErrorCode {
     FILE_TOO_LARGE(HttpStatus.CONTENT_TOO_LARGE, "파일이 너무 큽니다"),
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "지원하지 않는 파일 형식입니다"),
     MESSAGE_IN_PROGRESS(HttpStatus.CONFLICT, "이전 질문을 처리하는 중입니다"),
+    EVALUATION_IN_PROGRESS(HttpStatus.CONFLICT, "평가가 진행 중입니다"),
     SESSION_CLOSED(HttpStatus.GONE, "종료된 대화입니다"),
     SESSION_EXPIRED(HttpStatus.GONE, "만료된 대화입니다"),
     PERSONAL_INFO_DETECTED(HttpStatus.BAD_REQUEST, "개인정보로 보이는 내용이 있습니다"),

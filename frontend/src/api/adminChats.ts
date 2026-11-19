@@ -1,3 +1,4 @@
+import type { LatestEvaluation } from "./adminEvaluations";
 import { apiRequest } from "./client";
 
 export interface Page<T> {
@@ -15,6 +16,7 @@ export interface SessionSummary {
   closedAt: string | null;
   questionCount: number;
   errorCount: number;
+  evaluationCount: number;
   firstQuestion: string | null;
 }
 
@@ -45,6 +47,7 @@ export interface MessageDetail {
   errorCode: string | null;
   createdAt: string;
   retrieval: RetrievalSnapshot[];
+  latestEvaluation: LatestEvaluation | null;
 }
 
 export interface SessionDetail {

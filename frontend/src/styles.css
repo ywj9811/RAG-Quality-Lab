@@ -50,3 +50,4 @@ th, td { text-align: left; padding: 8px; border-bottom: 1px solid #d0d7de; verti
 .pager { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
 .snapshots { padding-left: 20px; }
 pre.snippet { font: inherit; font-size: 0.85rem; background: #fff; border: 1px solid #eaeef2; padding: 6px; max-height: 160px; overflow: auto; }
+.eval-control { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; }

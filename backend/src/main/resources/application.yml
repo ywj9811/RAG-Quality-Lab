@@ -128,6 +128,14 @@ app:
       timeout: 30s
       thinking-level: MINIMAL
       allowed-models: [gemini-3.5-flash-lite, gemini-2.5-flash-lite]
+    judge:
+      # 생성과 다른 모델 등급 (ADR-0004, RK-01). 무료 RPD 20이라 재시도하지 않는다
+      model: ${RQL_JUDGE_MODEL:gemini-3.6-flash}
+      max-output-tokens: 2048
+      temperature: 0.0
+      timeout: 60s
+      thinking-level: LOW
+      allowed-models: [gemini-3.6-flash, gemini-3.8-flash]
   admin:
     max-failed-attempts: 5
     lock-duration: 15m

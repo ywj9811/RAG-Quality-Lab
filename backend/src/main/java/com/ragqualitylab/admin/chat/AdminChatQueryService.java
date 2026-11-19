@@ -61,6 +61,8 @@ public class AdminChatQueryService {
             SELECT s.id, s.status, s.created_at, s.last_activity_at, s.closed_at,
                    (SELECT count(*) FROM chat_messages m WHERE m.session_id = s.id AND m.role = 'USER') AS questions,
                    (SELECT count(*) FROM chat_messages m WHERE m.session_id = s.id AND m.answer_type = 'ERROR') AS errors,
+                   (SELECT count(*) FROM evaluations e JOIN chat_messages m ON m.id = e.answer_message_id
+                    WHERE m.session_id = s.id) AS evaluations,
                    (SELECT left(m.content, 80) FROM chat_messages m WHERE m.session_id = s.id AND m.role = 'USER'
                     ORDER BY m.seq LIMIT 1) AS first_question
             FROM chat_sessions s
@@ -68,7 +70,7 @@ public class AdminChatQueryService {
             params, (rs, i) -> new SessionSummary(rs.getObject("id", UUID.class), rs.getString("status"),
                 instant(rs.getTimestamp("created_at")), instant(rs.getTimestamp("last_activity_at")),
                 instant(rs.getTimestamp("closed_at")), rs.getInt("questions"), rs.getInt("errors"),
-                rs.getString("first_question")));
+                rs.getInt("evaluations"), rs.getString("first_question")));
         return new PageResponse<>(items, page, size, total == null ? 0 : total);
     }
 
@@ -99,6 +101,18 @@ public class AdminChatQueryService {
                     json.readValue(rs.getString("locator"), SourceLocator.class), rs.getString("text_snapshot")));
         });
 
+        Map<UUID, LatestEvaluation> latest = new HashMap<>();
+        jdbc.query("""
+            SELECT DISTINCT ON (e.answer_message_id) e.answer_message_id, e.id, e.status, e.total_score, e.created_at,
+                   count(*) OVER (PARTITION BY e.answer_message_id) AS total
+            FROM evaluations e JOIN chat_messages m ON m.id = e.answer_message_id
+            WHERE m.session_id = :id ORDER BY e.answer_message_id, e.created_at DESC
+            """, params, rs -> {
+            latest.put(rs.getObject("answer_message_id", UUID.class), new LatestEvaluation(rs.getObject("id", UUID.class),
+                rs.getString("status"), (Integer) rs.getObject("total_score"), instant(rs.getTimestamp("created_at")),
+                rs.getInt("total")));
+        });
+
         jdbc.query("""
             SELECT id, seq, role, content, answer_type, model_id, prompt_version, retrieval_query, input_tokens,
                    output_tokens, retrieval_ms, generation_ms, latency_ms, error_code, created_at
@@ -111,7 +125,7 @@ public class AdminChatQueryService {
                 (Integer) rs.getObject("output_tokens"), (Integer) rs.getObject("retrieval_ms"),
                 (Integer) rs.getObject("generation_ms"), (Integer) rs.getObject("latency_ms"),
                 rs.getString("error_code"), instant(rs.getTimestamp("created_at")),
-                snapshots.getOrDefault(id, List.of())));
+                snapshots.getOrDefault(id, List.of()), latest.get(id)));
         });
         return detail;
     }
@@ -121,7 +135,7 @@ public class AdminChatQueryService {
     }
 
     public record SessionSummary(UUID id, String status, Instant createdAt, Instant lastActivityAt, Instant closedAt,
-                                 int questionCount, int errorCount, String firstQuestion) {
+                                 int questionCount, int errorCount, int evaluationCount, String firstQuestion) {
     }
 
     public record SessionDetail(UUID id, String status, Instant createdAt, Instant lastActivityAt, Instant expiresAt,
@@ -131,7 +145,11 @@ public class AdminChatQueryService {
     public record MessageDetail(UUID id, int seq, String role, String content, String answerType, String modelId,
                                 String promptVersion, String retrievalQuery, Integer inputTokens, Integer outputTokens,
                                 Integer retrievalMs, Integer generationMs, Integer latencyMs, String errorCode,
-                                Instant createdAt, List<RetrievalSnapshot> retrieval) {
+                                Instant createdAt, List<RetrievalSnapshot> retrieval, LatestEvaluation latestEvaluation) {
+    }
+
+    /** 답변의 최신 평가 요약과 평가 횟수 */
+    public record LatestEvaluation(UUID id, String status, Integer totalScore, Instant createdAt, int count) {
     }
 
     /** chunkAvailable: 원본 청크가 아직 남아 있는지(삭제 후 30일 지나면 false). 텍스트는 스냅샷으로 항상 남는다 */

@@ -8,6 +8,7 @@ import com.ragqualitylab.chat.domain.MessageRole;
 import com.ragqualitylab.common.ratelimit.FixedWindowRateLimiter;
 import com.ragqualitylab.common.web.ApiException;
 import com.ragqualitylab.common.web.ErrorCode;
+import com.ragqualitylab.llm.common.CauseSummary;
 import com.ragqualitylab.llm.embedding.EmbeddingUnavailableException;
 import com.ragqualitylab.llm.generation.GenerationFailure;
 import com.ragqualitylab.llm.generation.GenerationModelPort;
@@ -154,8 +155,7 @@ public class ChatService {
                 case TIMEOUT -> UsageStatus.TIMEOUT;
                 case UNAVAILABLE -> UsageStatus.ERROR;
             };
-            log.warn("생성 실패: session={} kind={} cause={}", sessionId, e.kind(),
-                e.getCause() == null ? null : e.getCause().getClass().getSimpleName());
+            log.warn("생성 실패: session={} kind={} cause={}", sessionId, e.kind(), CauseSummary.of(e.getCause()));
             ChatMessage error = saveError(turn, query, params, code, started, retrievalMs);
             budget.complete(reservation, usageStatus, null, null, generationMs, error.getId(), null);
             throw new ApiException(code, userMessage(code));

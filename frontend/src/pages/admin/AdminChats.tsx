@@ -76,6 +76,7 @@ export default function AdminChats() {
                   <th>첫 질문</th>
                   <th>질문 수</th>
                   <th>오류</th>
+                  <th>평가</th>
                   <th>마지막 활동</th>
                 </tr>
               </thead>
@@ -89,6 +90,7 @@ export default function AdminChats() {
                     <td className="truncate">{s.firstQuestion ?? <span className="muted">(질문 없음)</span>}</td>
                     <td>{s.questionCount}</td>
                     <td>{s.errorCount > 0 ? <span className="status-failed">{s.errorCount}</span> : 0}</td>
+                    <td>{s.evaluationCount}</td>
                     <td>{dateTime.format(new Date(s.lastActivityAt))}</td>
                   </tr>
                 ))}

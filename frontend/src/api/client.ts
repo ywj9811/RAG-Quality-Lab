@@ -4,6 +4,8 @@ export class ApiError extends Error {
     readonly status: number,
     readonly code: string,
     message: string,
+    /** Problem Details의 확장 필드 (예: existingEvaluationId, retryAfterSeconds) */
+    readonly extra: Record<string, unknown> = {},
   ) {
     super(message);
   }
@@ -28,8 +30,8 @@ async function ensureXsrfToken(): Promise<string> {
 
 async function toApiError(res: Response): Promise<ApiError> {
   try {
-    const body = (await res.json()) as { code?: string; detail?: string };
-    return new ApiError(res.status, body.code ?? "UNKNOWN", body.detail ?? "요청을 처리하지 못했습니다.");
+    const body = (await res.json()) as { code?: string; detail?: string } & Record<string, unknown>;
+    return new ApiError(res.status, body.code ?? "UNKNOWN", body.detail ?? "요청을 처리하지 못했습니다.", body);
   } catch {
     return new ApiError(res.status, "UNKNOWN", "요청을 처리하지 못했습니다.");
   }
