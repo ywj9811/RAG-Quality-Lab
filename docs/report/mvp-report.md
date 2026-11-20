@@ -14,7 +14,7 @@
 | 세션 종료 후 방문자 조회·추가 요청 거절 | ✅ | 410 SESSION_CLOSED/EXPIRED, `ChatIntegrationTests` |
 | 세션 ID만으로 타인 대화 열람 불가 | ✅ | 토큰 불일치·없음 모두 404, `otherPeopleCannotReadOrWriteWithSessionIdOnly` |
 | 관리자 문서·대화 조회 | ✅ | `/admin/documents`, `/admin/chats` |
-| 개별 응답 평가로 점수·사유 생성 | ⚠️ 조건부 | 파이프라인은 실제 모델로 정상 동작(진단용 실행). **기본 Judge(`gemini-3.6-flash`)는 확인일에 Google 과부하로 응답 실패** (5절) |
+| 개별 응답 평가로 점수·사유 생성 | ✅ | 2026-11-20 기본 Judge `gemini-3.6-flash`로 실제 채점 완료(항목별 점수·사유 저장). 전날은 Google 과부하로 실패해 가용성 변동이 있다 (5절) |
 | 평가 모델·프롬프트 버전·근거 저장 | ✅ | `evaluations.judge_model_id/prompt_version/input_snapshot`, `retrieval_records` |
 | 재평가 시 과거 이력 보존 | ✅ | `reEvaluationKeepsHistory` |
 | 대시보드에서 평가 완료 건 평균 품질 점수 | ✅ | `/admin` (답변별 최신 1건 기준) |
@@ -62,7 +62,7 @@
 
 | 구분 | 내용 | 다음 조치 |
 |---|---|---|
-| Judge 가용성 | `gemini-3.6-flash`·`3.8-flash`가 확인일에 503·시간 초과. 무료 RPD 20이라 재시도하지 않음 | 다른 날 재시도. 계속되면 ADR-0004 변경 제안(예: 로컬 Ollama Judge) |
+| Judge 가용성 | 11-19에는 503·시간 초과, 11-20에는 정상. 무료 RPD 20이라 재시도하지 않음 | 실패율이 높아지면 ADR-0004 변경 제안(예: 로컬 Ollama Judge) |
 | Judge 편향 (RK-01) | 생성·Judge가 같은 Gemini 계열 | 사람 점수와 일치도 비교(오너 10~12건 수동 채점) — 오너 작업 |
 | 골든셋 검토 | 40개 모두 DRAFT | 오너 검토 후 APPROVED |
 | 근거 부족 판정 | 유사도 임계값만으로는 불가, 모델 판단에 의존 | 생성 회귀의 거절 일치율로 추적 |
