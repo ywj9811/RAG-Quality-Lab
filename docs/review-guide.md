@@ -80,6 +80,7 @@ com.ragqualitylab
 | #13 | 5 | LLM-as-a-Judge 수동 평가 | Claude Code |
 | #14 | 5 | Judge 모델 환경변수 연결, 실제 호출 기록 | Claude Code |
 | #15 | 6 | 대시보드, 보관 기간 정리, 생성 회귀, MVP 보고서 | Claude Code |
+| #16 | 6 | 실제 Judge 채점 확인 기록 | Claude Code |
 
 ## 5. 실제 외부 호출 기록 (개발 확인용)
 
@@ -90,7 +91,9 @@ com.ragqualitylab
 | 2026-11-19 | Judge `gemini-3.8-flash` 1회 (환경변수로 임시 지정) | 60초 시간 초과 |
 | 2026-11-19 | **진단용** Judge를 `gemini-3.5-flash-lite`로 임시 지정 1회 | 정상 완료(2.6초, 100점). 파이프라인(입력 구성·JSON 검증·저장·화면) 확인용이며 생성과 같은 모델이라 실제 평가로 보지 않는다. DB의 해당 평가 행은 `judge_model_id=gemini-3.5-flash-lite`로 구분된다 |
 
-Judge 기본 모델은 `gemini-3.6-flash`로 유지한다. Google 쪽 일시적 과부하로 보이며, 계속되면 ADR-0004 변경을 제안한다.
+| 2026-11-20 | Judge `gemini-3.6-flash` 1회 | **정상 완료**. 항목별 점수·사유 저장 확인 |
+
+Judge 기본 모델은 `gemini-3.6-flash`로 유지한다. 11-19 실패는 Google 쪽 일시적 과부하였다.
 
 ## 6. 검수 시 추천 순서
 1. 이 문서 2·3절로 구조 파악
